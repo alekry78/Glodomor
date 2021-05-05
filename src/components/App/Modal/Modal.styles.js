@@ -3,10 +3,10 @@ import {Previous} from "../App.styles";
 export const ModalView = styled.div`
     width:100vw;
     height:100vh;
-    // display:flex;
-    // flex-direction:column;
-    // justify-content:center;
-    // align-items:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
     z-index:1000;
     background-color:rgba(0,0,0,0.5);
     position:absolute;
@@ -16,16 +16,17 @@ export const ModalView = styled.div`
     padding:0;
 `
 export const RecipeContainer = styled.div`
-     width:100vw;
-     height: calc(100% - 40px);
+     width:100%;
+     height:100%;
      display:flex;
      justify-content:center;
      align-items:center;
+     flex-grow:1;
 `
 export const Recipe = styled.div`
-    width:90vw;
+    width:100%;
     max-width:1600px;
-    height: 1200px;
+    height:calc(100vh - 80px);
     display:flex;
     border-radius:25px;
     align-items:center;
@@ -103,20 +104,15 @@ export const Instructions = styled.div`
     box-sizing:border-box;
     margin:0;
     padding:20px;
-    width:100%;
+    width:85%;
     height:45%;
     display:flex;
-    justify-content:center;
-    align-items:center;
+    justify-content:flex-start;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    overflow: auto;
     p{
         margin:0;
-        text-align:center;
-        width:100%;
-        height:100%;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        overflow-Y: auto;
     }
 `
 export const ImageContainer = styled.div`
@@ -143,7 +139,8 @@ export const Ingredient = styled.span`
     color:${({theme})=>theme.color.purple};
     text-shadow:2px -2px 4px ${({theme})=>theme.color.neonBlue};
     text-transform:uppercase;
-    font-size:40px;
+    font-size:25px;
+    font-weight:700;
 `
 export const Strong = styled.span`
     color:${({theme})=>theme.color.purple};

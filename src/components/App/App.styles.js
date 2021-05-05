@@ -95,3 +95,19 @@ export const AddedByUser = styled.span`
     text-transform:uppercase;
     cursor:pointer;
 `
+export const LogOut = styled.button`
+    width: 120px;
+    height:40px;
+    border-radius:20px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background-color:rgba(0,0,0,0);
+    border:3px solid ${({theme})=>theme.color.purple};
+    box-shadow:0px 2px 2px 0px ${({theme})=>theme.color.neonBlue};
+    color:${({theme})=>theme.color.purple};
+    text-transform:uppercase;
+    cursor:pointer;
+    margin-top:10px;
+`

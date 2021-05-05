@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import ChosenIngredients from "../App/ChosenIngredients/ChosenIngredients";
 
 export const Form = styled.form`
     width:540px;
@@ -52,8 +53,8 @@ export const Input = styled.input`
     }
 `
 export const Textarea = styled.textarea`
-  width:475px;
-    height:200px;
+    width:475px;
+    height:125px;
     border:2px solid ${({theme})=>theme.color.purple};
     box-shadow:${({theme})=>theme.shadow.neon};
     font-size:22px;

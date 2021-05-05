@@ -43,7 +43,11 @@ export const Next = styled.div`
 `
 export const Username = styled(Input)`
     display:flex;
-    justify-content:center;
+    justify-content:flex-start;
     align-items:center;
-    text-align:center;
+    text-align:left;
+`
+export const Image = styled.img`
+    width:40vh;
+    height:40vh;
 `

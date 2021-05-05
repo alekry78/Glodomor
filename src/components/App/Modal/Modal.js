@@ -11,7 +11,7 @@ import {
     Ingredient,
     Ingredients, Strong, ImageContainer, RecipeContainer
 } from "./Modal.styles";
-const Modal = ({title,ingredients,instructions,clearModal,img}) => {
+const Modal = ({title,requiredIngredients,additionalIngredients,instructions,clearModal,img}) => {
     return(
         <ModalView>
             <Navigation>
@@ -27,9 +27,9 @@ const Modal = ({title,ingredients,instructions,clearModal,img}) => {
                             Instrukcje
                         </Strong>
                         <Instructions>
-                            <p>
-                                {instructions}
-                            </p>
+                           <p>
+                               {instructions}
+                           </p>
                         </Instructions>
                     </Container>
                     <Container>
@@ -40,13 +40,20 @@ const Modal = ({title,ingredients,instructions,clearModal,img}) => {
                             Składniki
                         </Strong>
                         <Ingredients>
-                            {ingredients.map(el=>{
+                            {requiredIngredients.map(el=>{
                                 return(
                                     <Ingredient>
                                         {el}
                                     </Ingredient>
                                 )
                             })}
+                            {additionalIngredients.length > 0 ? additionalIngredients.map(el=>{
+                                return(
+                                    <Ingredient>
+                                        {el}
+                                    </Ingredient>
+                                )
+                            }) : null}
                         </Ingredients>
                     </Container>
                 </Recipe>

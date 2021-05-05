@@ -8,27 +8,89 @@ import App from "../components/App/App";
 import AddRecipe from "../components/AddRecipe/AddRecipe";
 import history from '../history';
 import AddedByUser from "../components/AddedByUser/AddedByUser";
-import Favourites from "../components/Favourites/Favourites";
+import firebase from "../base";
 const Root = () => {
+    const[user,setUser]=useState("");
+    const[email,setEmail]=useState("");
+    const[password,setPassword]=useState("");
+    const[emailError,setEmailError]=useState("");
+    const[passError,setPassError]=useState("");
+    const[hasAccount,setHasAccount]=useState(false);
+    const clearInputs = () =>{
+        setEmail('');
+        setPassword('');
+    }
+    const clearErrors = () =>{
+        setEmailError('');
+        setPassError('');
+    }
+    const handleLogin = () => {
+        clearErrors();
+        firebase
+            .auth()
+            .signInWithEmailAndPassword(email,password)
+            .catch(err =>{
+                switch(err.code){
+                    case "auth/invalid-email":
+                    case "auth/user-disabled":
+                    case "auth/user-not-found":
+                        setEmailError(err.message);
+                        break;
+                    case "auth/wrong-password":
+                        setPassError(err.message);
+                        break;
+                }
+            })
+    };
+    const handleSignUp = () =>{
+        clearErrors();
+        firebase
+            .auth()
+            .createUserWithEmailAndPassword(email,password)
+            .catch(err =>{
+                switch(err.code){
+                    case "auth/email-already-in-use":
+                    case "auth/invalid-email":
+                        setEmailError(err.message);
+                        break;
+                    case "auth/weak-password":
+                        setPassError(err.message);
+                        break;
+                }
+            })
+
+    };
+    const handleLogout = () => {
+        firebase.auth().signOut();
+        history.push("");
+    }
+    const authListener = () =>{
+        firebase.auth().onAuthStateChanged((user) =>{
+            if(user){
+                clearInputs();
+                setUser(user);
+                // history.push(`/${user.uid}`);
+            }else{
+                setUser("");
+            }
+        })
+    }
     return(
         <Router history={history}>
             <ThemeProvider theme={theme}>
                 <GlobalStyle/>
                 <Switch>
                     <Route exact path="/">
-                        <Home />
+                        {user ? <App user={user} handleLogout={handleLogout}/> :  <Home email={email} setEmail={setEmail} password={password} setPassword={setPassword} handleLogin={handleLogin}
+                                                 handleSignUp={handleSignUp} hasAccount={hasAccount} setHasAccount={setHasAccount} emailError={emailError} passError={passError} authListener={authListener} user={user}/>}
                     </Route>
-                    <Route path={`/app/${history.location.pathname.slice(5,history.location.pathname.length)}`}>
-                       <App />
+                    <Route path="/add-new">
+                        {user ? <AddRecipe user={user}/> : <Home email={email} setEmail={setEmail} password={password} setPassword={setPassword} handleLogin={handleLogin}
+                                                                 handleSignUp={handleSignUp} hasAccount={hasAccount} setHasAccount={setHasAccount} emailError={emailError} passError={passError} authListener={authListener} user={user}/>}
                     </Route>
-                    <Route path={`/add-new/${history.location.pathname.slice(9,history.location.pathname.length)}`}>
-                        <AddRecipe />
-                    </Route>
-                    <Route path={`/added-by-user/${history.location.pathname.slice(15,history.location.pathname.length)}`}>
-                        <AddedByUser />
-                    </Route>
-                    <Route path={`/users-favourites/${history.location.pathname.slice(18,history.location.pathname.length)}`}>
-                        <Favourites />
+                    <Route path="/all-recipes">
+                        {user ? <AddedByUser user={user}/> : <Home email={email} setEmail={setEmail} password={password} setPassword={setPassword} handleLogin={handleLogin}
+                                         handleSignUp={handleSignUp} hasAccount={hasAccount} setHasAccount={setHasAccount} emailError={emailError} passError={passError} authListener={authListener} user={user}/>}
                     </Route>
                 </Switch>
             </ThemeProvider>

@@ -6,12 +6,14 @@ import firebase from "../../base.js";
 import history from "../../history";
 
 let message = "";
-const AddRecipe = () => {
+const AddRecipe = ({user}) => {
+    const [reqIngredientsValue, setReqIngredientsValue] = useState("");
+    const [reqIngredients, setReqIngredients] = useState([]);
     const [ingredientsValue, setIngredientsValue] = useState("");
+    const [ingredients, setIngredients] = useState([]);
     const [nameValue, setNameValue] = useState("")
     const [descValue, setDescValue] = useState("")
     const [instrValue, setInstrValue] = useState("")
-    const [added, setAdded] = useState([]);
     const [errors,setErrors] = useState({
         name:"",
         ingr:"",
@@ -42,22 +44,49 @@ const AddRecipe = () => {
                 }
         })
     },[])
+    const handleReqIngredient = (e) => {
+        setReqIngredientsValue(e.target.value);
+    }
     const handleIngredient = (e) => {
         setIngredientsValue(e.target.value);
     }
+    const handleDeleteReqIngredient = (element) => {
+        setReqIngredients(reqIngredients.filter(el => el !== element));
+    }
     const handleDeleteIngredient = (element) => {
-        setAdded(added.filter(el => el !== element));
+        setIngredients(reqIngredients.filter(el => el !== element));
+    }
+    const handleAddReqIngredient = (e) => {
+        if (e.keyCode === 13) {
+            message = "";
+            if (all[0].filter(el => el != reqIngredientsValue).length < all[0].length) {
+                if (reqIngredients.filter(el => el != reqIngredientsValue).length < reqIngredients.length) {
+                    message = "Już dodałeś ten składnik!";
+                    setReqIngredientsValue("");
+                } else {
+                    message = "";
+                    setReqIngredients(prevState => [...prevState, reqIngredientsValue]);
+                    setReqIngredientsValue("");
+                }
+            } else {
+                message = "Nie mamy takiego składnika w bazie!"
+                setReqIngredientsValue("");
+            }
+        } else {
+            message = "";
+            return null;
+        }
     }
     const handleAddIngredient = (e) => {
         if (e.keyCode === 13) {
             message = "";
             if (all[0].filter(el => el != ingredientsValue).length < all[0].length) {
-                if (added.filter(el => el != ingredientsValue).length < added.length) {
+                if (reqIngredients.filter(el => el != ingredientsValue).length < ingredients.length) {
                     message = "Już dodałeś ten składnik!";
                     setIngredientsValue("");
                 } else {
                     message = "";
-                    setAdded(prevState => [...prevState, ingredientsValue]);
+                    setIngredients(prevState => [...prevState, ingredientsValue]);
                     setIngredientsValue("");
                 }
             } else {
@@ -84,21 +113,17 @@ const AddRecipe = () => {
                 // Make a fileInfo Object
                 console.log("Called", reader);
                 baseURL = reader.result;
-                console.log(baseURL);
                 resolve(baseURL);
             };
-            console.log(fileInfo);
         });
     };
 
     const handleImageUpload = e => {
-        console.log(e.target.files[0]);
         let file = image.file;
         file = e.target.files[0];
         getBase64(file)
             .then(result => {
                 file["base64"] = result;
-                console.log("File Is", file);
                 setImage(prevState=>{
                     return{
                         base64URL: result,
@@ -134,7 +159,7 @@ const AddRecipe = () => {
                 }
             })
         }
-        if(added.length < 2){
+        if(reqIngredients.length < 2){
             setErrors(prevState=>{
                 return{
                     ...prevState,
@@ -182,20 +207,22 @@ const AddRecipe = () => {
                 }
             })
         }
-        if(error <= 0){
-            const recipeRef = firebase.database().ref(`Users/${history.location.pathname.slice(9,history.location.pathname.length)}/Recipes`);
+        if(error <= 0) {
+            const recipeRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
             const recipes = {
                 "title": nameValue,
                 "details": descValue,
-                "ingredients": added,
+                "requiredIngredients": reqIngredients,
+                "additionalIngredients":ingredients,
                 "instructions": instrValue,
-                "image":image.base64URL,
-                "favourite":false,
-                "id":'_' + Math.random().toString(36).substr(2, 9)
+                "image": image.base64URL,
+                "favourite": false,
+                "id": '_' + Math.random().toString(36).substr(2, 9)
             }
             recipeRef.push(recipes)
             setNameValue("");
-            setAdded([]);
+            setReqIngredients([]);
+            setIngredients([]);
             setDescValue("");
             setInstrValue("");
         }
@@ -205,12 +232,12 @@ const AddRecipe = () => {
         <Wrapper>
             <Navigation>
                 <Previous  onClick={()=>{
-                    history.push(`/app/${history.location.pathname.slice(9,history.location.pathname.length)}`);
+                    history.push(`/`);
                     window.location.reload(true);
                 }}/>
             </Navigation>
             <MainSection>
-                <MainHeader style={{textAlign: "center"}}>
+                <MainHeader style={{textAlign: "center",fontSize:"40px"}}>
                     Dodaj swój <br/> przepis!
                 </MainHeader>
                 <Form>
@@ -223,15 +250,25 @@ const AddRecipe = () => {
                     </InputContainer>
                     <InputContainer>
                         <Label>
-                            Składniki
+                            Niezbędne Składniki
                         </Label>
                         {errors.ingr.length > 0 ? <Alert>{errors.ingr}</Alert> : null}
                         {message.length > 0 ? <Alert>{message}</Alert> : null}
+                        <Input type="text" onChange={handleReqIngredient} onKeyDown={handleAddReqIngredient}
+                               value={reqIngredientsValue}
+                               placeholder="Wpisz składnik i zatwierdź dodanie enterem"/>
+                        {reqIngredients.length > 0 ?
+                            <ChosenIngredients chosen={reqIngredients} deleteChosen={handleDeleteReqIngredient}/> : null}
+                    </InputContainer>
+                    <InputContainer>
+                        <Label>
+                            Dodatkowe składniki
+                        </Label>
                         <Input type="text" onChange={handleIngredient} onKeyDown={handleAddIngredient}
                                value={ingredientsValue}
                                placeholder="Wpisz składnik i zatwierdź dodanie enterem"/>
-                        {added.length > 0 ?
-                            <ChosenIngredients chosen={added} deleteChosen={handleDeleteIngredient}/> : null}
+                        {ingredients.length > 0 ?
+                            <ChosenIngredients chosen={ingredients} deleteChosen={handleDeleteIngredient}/> : null}
                     </InputContainer>
                     <InputContainer>
                         <Label>

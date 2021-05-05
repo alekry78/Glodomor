@@ -5,17 +5,18 @@ import {AddedContainer, AddedRecipesContainer} from "./AddedByUser.styles";
 import {Navigation, Previous} from "../App/App.styles";
 import Recipe from "../App/Recipe/Recipe";
 import Modal from "../App/Modal/Modal";
-
-const AddedByUser = () => {
+const AddedByUser = ({user}) => {
     const [addedByUser, setAddedByUser] = useState([]);
     const [modal,setModal] = useState({
         title:"",
-        ingredients:[],
+        requiredIngredients:[],
+        additionalIngredients:[],
         image:"",
         instructions:""
     })
     useEffect(() => {
-        const recipesRef = firebase.database().ref(`Users/${history.location.pathname.slice(15, history.location.pathname.length)}/Recipes`);
+        setAddedByUser([]);
+        const recipesRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
         recipesRef.on("value", (snapshot) => {
             const recipes = snapshot.val();
             for (let id in recipes) {
@@ -23,35 +24,53 @@ const AddedByUser = () => {
             }
         })
     }, [])
-    const showModal = (title,ingredients,instructions,image) =>{
-        setModal({
-            title,
-            ingredients,
-            instructions,
-            image
-        })
+    const showModal = (title,requiredIngredients,additionalIngredients,instructions,image) =>{
+        if(additionalIngredients!==undefined){
+            setModal({
+                title,
+                requiredIngredients,
+                additionalIngredients,
+                instructions,
+                image
+            })
+        }else{
+            setModal({
+                title,
+                requiredIngredients,
+                additionalIngredients:[],
+                instructions,
+                image
+            })
+        }
     }
     const handleRemove = (id) =>{
-        const addedRecipeRef = firebase.database().ref(`Users/${history.location.pathname.slice(15, history.location.pathname.length)}/Recipes`).child(id);
+        const addedRecipeRef = firebase.database().ref(`Users/${user.uid}/Recipes`).child(id);
         addedRecipeRef.remove();
         setAddedByUser(addedByUser.filter(el => el.ID !== id));
+    }
+    const handleFavourite = (ID,favourite) => {
+        setAddedByUser([]);
+        firebase.database().ref(`Users/${user.uid}/Recipes`).child(ID).update({
+                favourite:!favourite
+        })
+        console.log(favourite)
     }
     return(
         <AddedContainer>
             <Navigation>
                 <Previous onClick={()=>{
-                    history.push(`/app/${history.location.pathname.slice(15, history.location.pathname.length)}`)
+                    history.push("")
                     window.location.reload(true);
                 }}/>
             </Navigation>
             <AddedRecipesContainer>
                 {addedByUser.map(el=>{
                     return(
-                        <Recipe title={el.added.title} details={el.added.details} ingredients={el.added.ingredients} image={el.added.image} instructions={el.added.instructions} favourite={el.added.favourite} showModal={showModal} id={el.ID} remove={true} removeRecipe={handleRemove}/>
+                        <Recipe title={el.added.title} details={el.added.details} requiredIngredients={el.added.requiredIngredients} additionalIngredients={el.added.additionalIngredients} image={el.added.image} instructions={el.added.instructions} favourite={el.added.favourite} showModal={showModal} id={el.ID} remove={true} makeFavourite={handleFavourite} removeRecipe={handleRemove}/>
                     )
                 })}
             </AddedRecipesContainer>
-            {modal.ingredients.length > 0 ? <Modal clearModal={showModal} title={modal.title} ingredients={modal.ingredients} img={modal.image} instructions={modal.instructions}/> : null}
+            {modal.requiredIngredients.length > 0 ? <Modal clearModal={showModal} title={modal.title} requiredIngredients={modal.requiredIngredients} additionalIngredients={modal.additionalIngredients} img={modal.image} instructions={modal.instructions}/> : null}
         </AddedContainer>
     )
 };

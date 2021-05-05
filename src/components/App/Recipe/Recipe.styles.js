@@ -8,6 +8,12 @@ export const Icon = styled(FontAwesomeIcon)`
     cursor:pointer;
     align-self:flex-start;
 `
+export const IconDelete = styled(Icon)`
+color:red;
+`
+export const IconFav = styled(Icon)`
+color:gold;
+`
 export const RecipeContainer = styled.div`
     width:1000px;
     height:110px;
@@ -22,14 +28,14 @@ export const RecipeContainer = styled.div`
     &:nth-child(3){
          background-color:yellow;
     }
-    svg{
-        &:first-of-type{
-        color:gold;
-        }
-        &:nth-of-type(2){
-        color:red;
-        }
-    }
+    // svg{
+    //     &:first-of-type{
+    //     color:gold;
+    //     }
+    //     &:nth-of-type(2){
+    //     color:red;
+    //     }
+    // }
 `
 export const Image = styled.img`
     width:140px;

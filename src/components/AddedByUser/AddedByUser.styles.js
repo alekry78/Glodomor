@@ -4,6 +4,7 @@ export const AddedContainer = styled.div`
     width:100vw;
     height:100vh;
     background-color:white;
+    overflow:hidden;
 `
 export const AddedRecipesContainer = styled.div`
     width:100%;
