@@ -25,9 +25,9 @@ export const RecipeContainer = styled.div`
     padding:10px;
     margin:20px;
     cursor:pointer;
-    &:nth-child(3){
-         background-color:yellow;
-    }
+    // &:nth-child(3){
+    //      background-color:yellow;
+    // }
     // svg{
     //     &:first-of-type{
     //     color:gold;

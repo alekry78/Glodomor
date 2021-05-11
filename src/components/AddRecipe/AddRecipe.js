@@ -232,7 +232,7 @@ const AddRecipe = ({user}) => {
         <Wrapper>
             <Navigation>
                 <Previous  onClick={()=>{
-                    history.push(`/`);
+                    history.push(`/app`);
                     window.location.reload(true);
                 }}/>
             </Navigation>

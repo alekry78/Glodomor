@@ -53,6 +53,8 @@ export const Title = styled.h1`
     display:flex;
     justify-content:center;
     align-items:center;
+    text-align:center;
+    padding:5px;
 `
 export const Navigation = styled.nav`
     width:100vw;
@@ -121,10 +123,13 @@ export const ImageContainer = styled.div`
     display:flex;
     align-items:center;
     justify-content:center;
+    
 `
 export const Image = styled.img`
-    width: 90%;
+    width: 70%;
     height:90%;
+    box-shadow: -9px 11px 3px -1px #5b00e3, 5px -4px 3px -1px #00FFF6;
+    border-radius:10px;
 `
 export const Ingredients = styled.div`
     width: 100%;

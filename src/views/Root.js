@@ -9,6 +9,7 @@ import AddRecipe from "../components/AddRecipe/AddRecipe";
 import history from '../history';
 import AddedByUser from "../components/AddedByUser/AddedByUser";
 import firebase from "../base";
+import Loading from "../components/Home/Loading/Loading";
 const Root = () => {
     const[user,setUser]=useState("");
     const[email,setEmail]=useState("");
@@ -58,18 +59,16 @@ const Root = () => {
                         break;
                 }
             })
-
     };
     const handleLogout = () => {
         firebase.auth().signOut();
-        history.push("");
+        history.push("/");
     }
     const authListener = () =>{
         firebase.auth().onAuthStateChanged((user) =>{
             if(user){
                 clearInputs();
                 setUser(user);
-                // history.push(`/${user.uid}`);
             }else{
                 setUser("");
             }
@@ -84,13 +83,14 @@ const Root = () => {
                         {user ? <App user={user} handleLogout={handleLogout}/> :  <Home email={email} setEmail={setEmail} password={password} setPassword={setPassword} handleLogin={handleLogin}
                                                  handleSignUp={handleSignUp} hasAccount={hasAccount} setHasAccount={setHasAccount} emailError={emailError} passError={passError} authListener={authListener} user={user}/>}
                     </Route>
-                    <Route path="/add-new">
-                        {user ? <AddRecipe user={user}/> : <Home email={email} setEmail={setEmail} password={password} setPassword={setPassword} handleLogin={handleLogin}
-                                                                 handleSignUp={handleSignUp} hasAccount={hasAccount} setHasAccount={setHasAccount} emailError={emailError} passError={passError} authListener={authListener} user={user}/>}
+                    <Route exact path="/app">
+                        {user ? <App user={user} handleLogout={handleLogout}/> : <Loading authListener={authListener} />}
                     </Route>
-                    <Route path="/all-recipes">
-                        {user ? <AddedByUser user={user}/> : <Home email={email} setEmail={setEmail} password={password} setPassword={setPassword} handleLogin={handleLogin}
-                                         handleSignUp={handleSignUp} hasAccount={hasAccount} setHasAccount={setHasAccount} emailError={emailError} passError={passError} authListener={authListener} user={user}/>}
+                    <Route exact path="/add-new">
+                        {user ? <AddRecipe user={user}/> : <Loading authListener={authListener} />}
+                    </Route>
+                    <Route exact path="/all-recipes">
+                        {user ? <AddedByUser user={user}/> : <Loading authListener={authListener} /> }
                     </Route>
                 </Switch>
             </ThemeProvider>

@@ -32,6 +32,13 @@ const App = ({user,handleLogout}) => {
     })
     useEffect(()=>{
         setRecipes([]);
+        const allRecipesRef = firebase.database().ref(`Recipes`);
+        allRecipesRef.on("value",(snapshot)=>{
+            const addedRecipes = snapshot.val();
+            for(let id in addedRecipes){
+                setRecipes(prevState => [...prevState,{ID:id,recipe:addedRecipes[id]}])
+            }
+        })
         const recipesRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
         recipesRef.on("value",(snapshot)=>{
             const addedRecipes = snapshot.val();
@@ -58,19 +65,22 @@ const App = ({user,handleLogout}) => {
     }
     const handleCheck = () =>{
         setSearchedRecipes([])
-        let clicker = 0;
         for(let i = 0; i < recipes.length; i++) {
-            for(let j = 0 ; j < chosenIngredients.length; j++){
-                for(let k = 0 ; k < recipes[i].recipe.requiredIngredients.length;k++){
-                    if(chosenIngredients.sort()[j]==recipes[i].recipe.requiredIngredients.sort()[k]){
-                        clicker++;
-                        if(clicker == recipes[i].recipe.requiredIngredients.length){
-                            setSearchedRecipes(prevState=>[...prevState,recipes[i]]);
-                            clicker = 0;
-                        }
-                    }
+            let clicker = 0;
+            for(let j=0; j<chosenIngredients.length;j++){
+                console.log('Przepis ',i,recipes[i].recipe.requiredIngredients);
+                if(recipes[i].recipe.requiredIngredients.indexOf(chosenIngredients[j])>=0){
+                    console.log(chosenIngredients[j]);
+                    clicker++;
                 }
             }
+            console.log('przepis',i,'->',clicker,recipes[i].recipe.requiredIngredients.length );
+            if(clicker === recipes[i].recipe.requiredIngredients.length){
+                console.log('wybieram: ', recipes[i].recipe.requiredIngredients);
+                             setSearchedRecipes(prevState=>[...prevState,recipes[i]]);
+                                clicker = 0;
+                            }
+            
         }
     }
     const showModal = (title,requiredIngredients,additionalIngredients,instructions,image) =>{
@@ -97,7 +107,9 @@ const App = ({user,handleLogout}) => {
         firebase.database().ref(`Users/${user.uid}/Recipes`).child(ID).update({
             favourite:!favourite
         })
-        console.log(favourite)
+        firebase.database().ref(`Recipes`).child(ID).update({
+            favourite:!favourite
+        })
     }
     return (
         <Wrapper>
