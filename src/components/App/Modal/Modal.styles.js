@@ -8,7 +8,7 @@ export const ModalView = styled.div`
     justify-content:center;
     align-items:flex-start;
     z-index:1000;
-    background-color:rgba(0,0,0,0.5);
+    background-color:white;
     position:absolute;
     top:0;
     left:0;

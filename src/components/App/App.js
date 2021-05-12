@@ -21,8 +21,10 @@ const initialState=[]
 const App = ({user,handleLogout}) => {
     const [ingredients,setIngredients] = useState(initialState);
     const [recipes,setRecipes] = useState([]);
+    const [premadeRecipes,setPremadeRecipes] = useState([]);
     const [chosenIngredients,setChosenIngredients] = useState([]);
     const [searchedRecipes,setSearchedRecipes] = useState([]);
+    const [searchedPremadeRecipes,setSearchedPremadeRecipes] = useState([]);
     const [modal,setModal] = useState({
         title:"",
         requiredIngredients:[],
@@ -32,11 +34,11 @@ const App = ({user,handleLogout}) => {
     })
     useEffect(()=>{
         setRecipes([]);
-        const allRecipesRef = firebase.database().ref(`Recipes`);
+        const allRecipesRef = firebase.database().ref(`Users/${user.uid}/PremadeRecipes`);
         allRecipesRef.on("value",(snapshot)=>{
             const addedRecipes = snapshot.val();
             for(let id in addedRecipes){
-                setRecipes(prevState => [...prevState,{ID:id,recipe:addedRecipes[id]}])
+                setPremadeRecipes(prevState => [...prevState,{ID:id,recipe:addedRecipes[id]}])
             }
         })
         const recipesRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
@@ -83,6 +85,22 @@ const App = ({user,handleLogout}) => {
             
         }
     }
+    const handleCheckPremade = () =>{
+        setSearchedPremadeRecipes([])
+        for(let i = 0; i < premadeRecipes.length; i++) {
+            let clicker = 0;
+            for(let j=0; j<chosenIngredients.length;j++){
+                if(premadeRecipes[i].recipe.requiredIngredients.indexOf(chosenIngredients[j])>=0){
+                    clicker++;
+                }
+            }
+            if(clicker === premadeRecipes[i].recipe.requiredIngredients.length){
+                             setSearchedPremadeRecipes(prevState=>[...prevState,premadeRecipes[i]]);
+                                clicker = 0;
+                            }
+            
+        }
+    }
     const showModal = (title,requiredIngredients,additionalIngredients,instructions,image) =>{
         if(additionalIngredients!==undefined){
             setModal({
@@ -103,18 +121,27 @@ const App = ({user,handleLogout}) => {
         }
 
     }
-    const handleFavourite = (ID,favourite) => {
+    const handleFavourite = (ID, favourite) => {
         firebase.database().ref(`Users/${user.uid}/Recipes`).child(ID).update({
-            favourite:!favourite
+            favourite: !favourite
         })
-        firebase.database().ref(`Recipes`).child(ID).update({
-            favourite:!favourite
-        })
+        searchedRecipes.filter(el=>el.ID === ID)[0].recipe.favourite = !searchedRecipes.filter(el=>el.ID === ID)[0].recipe.favourite
     }
+    const handlePremadeFavorite = (ID, favourite) => {
+        firebase.database().ref(`Users/${user.uid}/PremadeRecipes`).child(ID).update({
+            favourite:!favourite
+        })
+        searchedPremadeRecipes.filter(el=>el.ID === ID)[0].recipe.favourite = !searchedPremadeRecipes.filter(el=>el.ID === ID)[0].recipe.favourite
+    }
+    
     return (
         <Wrapper>
             <Navigation>
-                <LogOut onClick={handleLogout}>
+                <LogOut onClick={()=>{
+                    handleLogout();
+                    window.location.reload(true);
+                }
+                    }>
                     Wyloguj
                 </LogOut>
                 <AddedByUser onClick={()=>{
@@ -137,8 +164,9 @@ const App = ({user,handleLogout}) => {
                 </PickerContainer>
                 {ingredients.length>0 ? <Ingredients ingredients={ingredients} handleChoseIng={handleChoseIng}/> : null}
                 {chosenIngredients.length > 0 ? <ChosenIngredients chosen={chosenIngredients} deleteChosen={handleDeleteIngredient}/> : null}
-                {chosenIngredients.length > 0 ? <Search onClick={handleCheck}>Szukaj!</Search>: null}
+                {chosenIngredients.length > 0 ? <Search onClick={()=>{handleCheck(); handleCheckPremade();}}>Szukaj!</Search>: null}
                 {searchedRecipes.length > 0 ? searchedRecipes.map(el=>(<Recipe title={el.recipe.title} details={el.recipe.details} requiredIngredients={el.recipe.requiredIngredients} additionalIngredients={el.recipe.additionalIngredients} image={el.recipe.image} instructions={el.recipe.instructions} favourite={el.recipe.favourite} showModal={showModal} id={el.ID}  remove={false} makeFavourite={handleFavourite}/>)) : null}
+                {searchedPremadeRecipes.length > 0 ? searchedPremadeRecipes.map(el=>(<Recipe title={el.recipe.title} details={el.recipe.details} requiredIngredients={el.recipe.requiredIngredients} additionalIngredients={el.recipe.additionalIngredients} image={el.recipe.image} instructions={el.recipe.instructions} favourite={el.recipe.favourite} showModal={showModal} id={el.ID}  remove={false} makeFavourite={handlePremadeFavorite}/>)) : null}
             </MainSection>
             {modal.requiredIngredients.length > 0 ? <Modal clearModal={showModal} title={modal.title} requiredIngredients={modal.requiredIngredients} additionalIngredients={modal.additionalIngredients} img={modal.image} instructions={modal.instructions}/> : null}
         </Wrapper>

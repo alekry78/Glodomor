@@ -27,7 +27,7 @@ const AddedByUser = ({user}) => {
             }
         })
         setPremade([]);
-        const premadeRef = firebase.database().ref(`Recipes`);
+        const premadeRef = firebase.database().ref(`Users/${user.uid}/PremadeRecipes`);
         premadeRef.on("value",(snapshot)=>{
             const recipes = snapshot.val();
             for(let id in recipes){
@@ -67,7 +67,7 @@ const AddedByUser = ({user}) => {
     }
     const handlePremadeFavorite = (ID, favourite) => {
         setPremade([]);
-        firebase.database().ref(`Recipes`).child(ID).update({
+        firebase.database().ref(`Users/${user.uid}/PremadeRecipes`).child(ID).update({
             favourite:!favourite
         })
     }

@@ -48,6 +48,15 @@ const Root = () => {
         firebase
             .auth()
             .createUserWithEmailAndPassword(email,password)
+            .then((userCredential)=>{
+                const allRecipesRef = firebase.database().ref(`Recipes`);
+                allRecipesRef.on("value",(snapshot)=>{
+                    const addedRecipes = snapshot.val();
+                    for(let id in addedRecipes){
+                        firebase.database().ref(`Users/${userCredential.user.uid}/PremadeRecipes`).push(addedRecipes[id]);
+                    }
+                })
+            })
             .catch(err =>{
                 switch(err.code){
                     case "auth/email-already-in-use":
@@ -84,10 +93,10 @@ const Root = () => {
                                                  handleSignUp={handleSignUp} hasAccount={hasAccount} setHasAccount={setHasAccount} emailError={emailError} passError={passError} authListener={authListener} user={user}/>}
                     </Route>
                     <Route exact path="/app">
-                        {user ? <App user={user} handleLogout={handleLogout}/> : <Loading authListener={authListener} />}
+                        {user ? <App user={user} handleLogout={handleLogout}/> : <Loading authListener={authListener} /> }
                     </Route>
                     <Route exact path="/add-new">
-                        {user ? <AddRecipe user={user}/> : <Loading authListener={authListener} />}
+                        {user ? <AddRecipe user={user}/> : <Loading authListener={authListener} /> }
                     </Route>
                     <Route exact path="/all-recipes">
                         {user ? <AddedByUser user={user}/> : <Loading authListener={authListener} /> }
