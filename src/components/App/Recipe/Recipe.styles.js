@@ -14,6 +14,9 @@ color:red;
 export const IconFav = styled(Icon)`
 color:gold;
 `
+export const IconEdit = styled(Icon)`
+color:green;
+`
 export const RecipeContainer = styled.div`
     width:1000px;
     height:110px;

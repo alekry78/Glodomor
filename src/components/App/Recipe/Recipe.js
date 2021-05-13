@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
-import {Container, Details, Icon, IconDelete, IconFav, Image, RecipeContainer, Title} from './Recipe.styles';
+import {Container, Details, Icon, IconDelete, IconFav, Image, RecipeContainer, Title,IconEdit} from './Recipe.styles';
 import { faStar } from '@fortawesome/free-solid-svg-icons'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { faStarHalfAlt } from '@fortawesome/free-solid-svg-icons'
-const Recipe = ({title,details,showModal,requiredIngredients,additionalIngredients,instructions,image,favourite,id,remove,removeRecipe,makeFavourite}) => {
+import { faEdit } from '@fortawesome/free-solid-svg-icons'
+const Recipe = ({title,details,showModal,requiredIngredients,additionalIngredients,instructions,image,favourite,id,remove,removeRecipe,makeFavourite,edit,handleEdit}) => {
     const[fav,setFav]=useState(favourite)
     return(
       <RecipeContainer key={`${title}title`}>
@@ -21,6 +22,7 @@ const Recipe = ({title,details,showModal,requiredIngredients,additionalIngredien
           }} />
           }
           {remove ? <IconDelete icon={faTrash} onClick={() => removeRecipe(id)}/> : null }
+          {edit ? <IconEdit icon={faEdit} onClick={()=>handleEdit(id)} /> : null }
       </RecipeContainer>
     )
 };
