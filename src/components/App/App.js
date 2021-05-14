@@ -37,16 +37,20 @@ const App = ({user,handleLogout}) => {
         const allRecipesRef = firebase.database().ref(`Users/${user.uid}/PremadeRecipes`);
         allRecipesRef.on("value",(snapshot)=>{
             const addedRecipes = snapshot.val();
+            const recipe = [];
             for(let id in addedRecipes){
-                setPremadeRecipes(prevState => [...prevState,{ID:id,recipe:addedRecipes[id]}])
+                recipe.push({ID:id,recipe:addedRecipes[id]})
             }
+            setPremadeRecipes(recipe)
         })
         const recipesRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
         recipesRef.on("value",(snapshot)=>{
             const addedRecipes = snapshot.val();
+            const recipe = [];
             for(let id in addedRecipes){
-                setRecipes(prevState => [...prevState,{ID:id,recipe:addedRecipes[id]}])
+                recipe.push({ID:id,recipe:addedRecipes[id]})
             }
+            setRecipes(recipe)
         })
     },[])
     const handleClick = (data) => {

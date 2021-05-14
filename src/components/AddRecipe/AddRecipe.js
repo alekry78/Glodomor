@@ -6,7 +6,7 @@ import firebase from "../../base.js";
 import history from "../../history";
 
 let message = "";
-const AddRecipe = ({user,reqprop,ingrprop,nameprop,descprop,instrprop,imgprop,edit,id, saveEdited, }) => {
+const AddRecipe = ({user,reqprop,ingrprop,nameprop,descprop,instrprop,imgprop,edit,id, saveEdited }) => {
     const [reqIngredientsValue, setReqIngredientsValue] = useState("");
     const [reqIngredients, setReqIngredients] = useState(reqprop);
     const [ingredientsValue, setIngredientsValue] = useState("");
@@ -228,14 +228,15 @@ const AddRecipe = ({user,reqprop,ingrprop,nameprop,descprop,instrprop,imgprop,ed
         }
     }
     const editChosen = (id) =>{
-        firebase.database().ref(`Users/${user.uid}/Recipes`).child(id).update({
-                title: nameValue,
-                details: descValue,
-                requiredIngredients: reqIngredients,
-                additionalIngredients:ingredients,
-                instructions: instrValue,
-                image: image.base64URL,
-        })
+        const editRef = firebase.database().ref(`Users/${user.uid}/Recipes`).child(id)
+        editRef.update({
+            title: nameValue,
+            details: descValue,
+            requiredIngredients: reqIngredients,
+            additionalIngredients:ingredients,
+            instructions: instrValue,
+            image: image.base64URL,
+    })
         saveEdited();
     }
 

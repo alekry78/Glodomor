@@ -11,6 +11,9 @@ export const Icon = styled(FontAwesomeIcon)`
 export const IconDelete = styled(Icon)`
 color:red;
 `
+export const IconNotFav = styled(Icon)`
+    color:red;
+`
 export const IconFav = styled(Icon)`
 color:gold;
 `

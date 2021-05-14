@@ -13,6 +13,7 @@ export const AddedRecipesContainer = styled.div`
     flex-direction:column;
     align-items:center;
     justify-content:center;
+    
 `
 export const Choose = styled.span`
     cursor:pointer;
@@ -39,6 +40,8 @@ export const ChooseContainer = styled.div`
 export const ChosenHeader = styled.h1`
     color:${({theme})=>theme.color.purple};
     font-size:80px;
+    width:100%;
+    text-align:center;
     text-transform:uppercase;
     text-shadow:2px -2px 4px ${({theme})=>theme.color.neonBlue};
     margin:0;

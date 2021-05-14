@@ -16,26 +16,30 @@ const AddedByUser = ({user}) => {
         image: "",
         instructions: ""
     })
-    const[editRecipe,setEditRecipe] = useState({});
     const [chosen, setChosen] = useState("wszystkie");
+    const [editRecipe,setEditRecipe] = useState();
     useEffect(() => {
         setAddedByUser([]);
+        setPremade([]);
         const recipesRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
         recipesRef.on("value", (snapshot) => {
             const recipes = snapshot.val();
+            const recipesArray = [];
             for (let id in recipes) {
-                setAddedByUser(prevState => [...prevState, {ID: id, added: recipes[id]}])
+                recipesArray.push({ID: id, added: recipes[id]});
             }
+            setAddedByUser(recipesArray);
         })
-        setPremade([]);
         const premadeRef = firebase.database().ref(`Users/${user.uid}/PremadeRecipes`);
         premadeRef.on("value",(snapshot)=>{
             const recipes = snapshot.val();
+            const recipesArray = [];
             for(let id in recipes){
-                setPremade(prevState=>[...prevState,{ID:id, added:recipes[id]}])
+                recipesArray.push({ID: id, added: recipes[id]});
             }
+            setPremade(recipesArray);
         })
-    }, [])
+    }, [user.uid])
     const showModal = (title, requiredIngredients, additionalIngredients, instructions, image) => {
         if (additionalIngredients !== undefined) {
             setModal({
@@ -58,44 +62,28 @@ const AddedByUser = ({user}) => {
     const handleRemove = (id) => {
         const addedRecipeRef = firebase.database().ref(`Users/${user.uid}/Recipes`).child(id);
         addedRecipeRef.remove();
-        setAddedByUser(addedByUser.filter(el => el.ID !== id));
     }
-    const handleFavourite = (ID, favourite) => {
-        setAddedByUser([]);
-        firebase.database().ref(`Users/${user.uid}/Recipes`).child(ID).update({
+    const handleFavourite = (id, favourites) => {
+        const favouriteRef = firebase.database().ref(`Users/${user.uid}/Recipes`).child(id);
+        favouriteRef.update({
+            favourite: !favourites
+        }) 
+    }
+    const handlePremadeFavorite = (ID, favourite) => {
+        const favouriteRef = firebase.database().ref(`Users/${user.uid}/PremadeRecipes`).child(ID);
+        favouriteRef.update({
             favourite: !favourite
         })
     }
-    const handlePremadeFavorite = (ID, favourite) => {
-        setPremade([]);
-        firebase.database().ref(`Users/${user.uid}/PremadeRecipes`).child(ID).update({
-            favourite:!favourite
-        })
-    }
-    const handleChoose = (which) => {
-        setChosen(which);
-    }
     const handleEdit = (id) =>{
-        const editRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
-        editRef.on("value", (snapshot) => {
-            const recipe = snapshot.val();
-            setEditRecipe({ID:id,recipe:recipe[Object.keys(recipe).filter(el=>el===id)]});
-        })
+        setEditRecipe({ID:id,recipe:addedByUser.filter(el=>el.ID === id)[0].added})
     }
     const saveEdited = () => {
-        setEditRecipe({});
-        setAddedByUser([]);
-        const recipesRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
-        recipesRef.on("value", (snapshot) => {
-            const recipes = snapshot.val();
-            for (let id in recipes) {
-                setAddedByUser(prevState => [...prevState, {ID: id, added: recipes[id]}])
-            }
-        })
+        setEditRecipe();
     }
     return (
         <AddedContainer>
-            {Object.keys(editRecipe).length > 0 ? <AddRecipe  user={user} reqprop={editRecipe.recipe.requiredIngredients} ingrprop={[]} nameprop={editRecipe.recipe.title} descprop={editRecipe.recipe.details} instrprop={editRecipe.recipe.instructions} imgprop={editRecipe.recipe.image} edit={true} id={editRecipe.ID} saveEdited={saveEdited}/> :
+            {editRecipe ? <AddRecipe  user={user} reqprop={editRecipe.recipe.requiredIngredients} ingrprop={[]} nameprop={editRecipe.recipe.title} descprop={editRecipe.recipe.details} instrprop={editRecipe.recipe.instructions} imgprop={editRecipe.recipe.image} edit={true} id={editRecipe.ID} saveEdited={saveEdited}/> :
             <>
             <Navigation>
                 <Previous onClick={() => {
@@ -104,14 +92,14 @@ const AddedByUser = ({user}) => {
                 }}/>
             </Navigation>
             <ChooseContainer>
-                <Choose onClick={() => handleChoose("wszystkie")}>Wszystkie</Choose>
-                <Choose onClick={() => handleChoose("twoje")}>Twoje</Choose>
-                <Choose onClick={() => handleChoose("ulubione")}>Ulubione</Choose>
+                <Choose onClick={() => setChosen("wszystkie")}>Wszystkie</Choose>
+                <Choose onClick={() =>  setChosen("twoje")}>Twoje</Choose>
+                <Choose onClick={() =>  setChosen("ulubione")}>Ulubione</Choose>
             </ChooseContainer>
-            <AddedRecipesContainer>
-                <ChosenHeader>
+            <ChosenHeader>
                     {chosen}
                 </ChosenHeader>
+            <AddedRecipesContainer>
                 {chosen === "ulubione" ? addedByUser.filter(el=>el.added.favourite===true).map(el => {
                         return (
                             <Recipe title={el.added.title} details={el.added.details}
@@ -119,7 +107,7 @@ const AddedByUser = ({user}) => {
                                     additionalIngredients={el.added.additionalIngredients} image={el.added.image}
                                     instructions={el.added.instructions} favourite={el.added.favourite}
                                     showModal={showModal} id={el.ID} remove={true} makeFavourite={handleFavourite}
-                                    removeRecipe={handleRemove} edit={true} handleEdit={handleEdit}/>
+                                    removeRecipe={handleRemove} edit={true} handleEdit={handleEdit} key={el.added.id}/>
                         )
                 }) :null }
                 {chosen === "ulubione" ? premade.filter(el=>el.added.favourite===true).map(el=>{
@@ -129,7 +117,7 @@ const AddedByUser = ({user}) => {
                                 additionalIngredients={el.added.additionalIngredients} image={el.added.image}
                                 instructions={el.added.instructions} favourite={el.added.favourite}
                                 showModal={showModal} id={el.ID} remove={false} makeFavourite={handlePremadeFavorite}
-                                removeRecipe={handleRemove}/>
+                                removeRecipe={handleRemove} key={el.added.id}/>
                     )
                 }): null}
                 {chosen === "wszystkie" ? premade.map(el=>{
@@ -139,7 +127,7 @@ const AddedByUser = ({user}) => {
                                     additionalIngredients={el.added.additionalIngredients} image={el.added.image}
                                     instructions={el.added.instructions} favourite={el.added.favourite}
                                     showModal={showModal} id={el.ID} remove={false} makeFavourite={handlePremadeFavorite}
-                                    removeRecipe={handleRemove}/>
+                                    removeRecipe={handleRemove} key={el.added.id}/>
                     )
                 }) : null}
                 {chosen === "wszystkie" ? addedByUser.map(el=>{
@@ -149,7 +137,7 @@ const AddedByUser = ({user}) => {
                                     additionalIngredients={el.added.additionalIngredients} image={el.added.image}
                                     instructions={el.added.instructions} favourite={el.added.favourite}
                                     showModal={showModal} id={el.ID} remove={true} makeFavourite={handleFavourite}
-                                    removeRecipe={handleRemove} edit={true} handleEdit={handleEdit}/>
+                                    removeRecipe={handleRemove} edit={true} handleEdit={handleEdit} key={el.added.id}/>
                     )
                 }) : null}
                 {chosen === "twoje" ? addedByUser.map(el=>{
@@ -159,7 +147,7 @@ const AddedByUser = ({user}) => {
                 additionalIngredients={el.added.additionalIngredients} image={el.added.image}
                 instructions={el.added.instructions} favourite={el.added.favourite}
                 showModal={showModal} id={el.ID} remove={true} makeFavourite={handleFavourite}
-                removeRecipe={handleRemove} edit={true} handleEdit={handleEdit}/>
+                removeRecipe={handleRemove} edit={true} handleEdit={handleEdit} key={el.added.id}/>
 )
                 }) : null}
             </AddedRecipesContainer>
