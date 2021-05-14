@@ -5,7 +5,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { faStarHalfAlt } from '@fortawesome/free-solid-svg-icons'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 const Recipe = ({title,details,showModal,requiredIngredients,additionalIngredients,instructions,image,favourite,id,remove,removeRecipe,makeFavourite,edit,handleEdit}) => {
-    const[fav,setFav]=useState(favourite)
+    // const[fav,setFav]=useState(favourite)
     return(
       <RecipeContainer key={`${title}title`}>
           <Image key={`${title}image`} src={image}/>
@@ -15,10 +15,10 @@ const Recipe = ({title,details,showModal,requiredIngredients,additionalIngredien
           </Container>
           {!favourite ? <IconFav icon={faStar} onClick={()=> {
               makeFavourite(id,favourite);
-              setFav(!fav);
+            //   setFav(!fav);
           }}/> : <IconDelete icon={faStarHalfAlt} onClick={()=> {
               makeFavourite(id,favourite);
-              setFav(!fav);
+            //   setFav(!fav);
           }} />
           }
           {remove ? <IconDelete icon={faTrash} onClick={() => removeRecipe(id)}/> : null }

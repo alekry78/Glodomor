@@ -83,6 +83,7 @@ const Root = () => {
             }
         })
     }
+    const initialArray = [];
     return(
         <Router history={history}>
             <ThemeProvider theme={theme}>
@@ -96,10 +97,10 @@ const Root = () => {
                         {user ? <App user={user} handleLogout={handleLogout}/> : <Loading authListener={authListener} /> }
                     </Route>
                     <Route exact path="/add-new">
-                        {user ? <AddRecipe user={user}/> : <Loading authListener={authListener} /> }
+                        {user ? <AddRecipe user={user} reqprop={initialArray} ingrprop={initialArray} nameprop="" descprop="" instrprop="" imgprop="" edit={false} /> : <Loading authListener={authListener} /> }
                     </Route>
                     <Route exact path="/all-recipes">
-                        {user ? <AddedByUser user={user}/> : <Loading authListener={authListener} /> }
+                        {user ? <AddedByUser user={user} /> : <Loading authListener={authListener} /> }
                     </Route>
                 </Switch>
             </ThemeProvider>

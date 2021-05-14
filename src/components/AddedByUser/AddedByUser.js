@@ -5,7 +5,7 @@ import {AddedContainer, AddedRecipesContainer, Choose, ChooseContainer, ChosenHe
 import {Navigation, Previous} from "../App/App.styles";
 import Recipe from "../App/Recipe/Recipe";
 import Modal from "../App/Modal/Modal";
-
+import AddRecipe from "../AddRecipe/AddRecipe";
 const AddedByUser = ({user}) => {
     const [addedByUser, setAddedByUser] = useState([]);
     const [premade, setPremade] = useState([]);
@@ -79,11 +79,24 @@ const AddedByUser = ({user}) => {
         const editRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
         editRef.on("value", (snapshot) => {
             const recipe = snapshot.val();
-            setEditRecipe(recipe[Object.keys(recipe).filter(el=>el===id)]);
+            setEditRecipe({ID:id,recipe:recipe[Object.keys(recipe).filter(el=>el===id)]});
+        })
+    }
+    const saveEdited = () => {
+        setEditRecipe({});
+        setAddedByUser([]);
+        const recipesRef = firebase.database().ref(`Users/${user.uid}/Recipes`);
+        recipesRef.on("value", (snapshot) => {
+            const recipes = snapshot.val();
+            for (let id in recipes) {
+                setAddedByUser(prevState => [...prevState, {ID: id, added: recipes[id]}])
+            }
         })
     }
     return (
         <AddedContainer>
+            {Object.keys(editRecipe).length > 0 ? <AddRecipe  user={user} reqprop={editRecipe.recipe.requiredIngredients} ingrprop={[]} nameprop={editRecipe.recipe.title} descprop={editRecipe.recipe.details} instrprop={editRecipe.recipe.instructions} imgprop={editRecipe.recipe.image} edit={true} id={editRecipe.ID} saveEdited={saveEdited}/> :
+            <>
             <Navigation>
                 <Previous onClick={() => {
                     history.push("/app")
@@ -154,6 +167,8 @@ const AddedByUser = ({user}) => {
                 <Modal clearModal={showModal} title={modal.title} requiredIngredients={modal.requiredIngredients}
                        additionalIngredients={modal.additionalIngredients} img={modal.image}
                        instructions={modal.instructions}/> : null}
+                       </>
+             }
         </AddedContainer>
     )
 };

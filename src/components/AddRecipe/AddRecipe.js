@@ -1,19 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {MainHeader, MainSection, Navigation, Previous, Wrapper} from "../App/App.styles";
-import {Alert, Form, Input, InputContainer, Label, Submit, Textarea} from "./AddRecipe.styles";
+import {Alert, Form, Input, InputContainer, Label, Submit, Textarea, Save} from "./AddRecipe.styles";
 import ChosenIngredients from "../App/ChosenIngredients/ChosenIngredients";
 import firebase from "../../base.js";
 import history from "../../history";
 
 let message = "";
-const AddRecipe = ({user}) => {
+const AddRecipe = ({user,reqprop,ingrprop,nameprop,descprop,instrprop,imgprop,edit,id, saveEdited, }) => {
     const [reqIngredientsValue, setReqIngredientsValue] = useState("");
-    const [reqIngredients, setReqIngredients] = useState([]);
+    const [reqIngredients, setReqIngredients] = useState(reqprop);
     const [ingredientsValue, setIngredientsValue] = useState("");
-    const [ingredients, setIngredients] = useState([]);
-    const [nameValue, setNameValue] = useState("")
-    const [descValue, setDescValue] = useState("")
-    const [instrValue, setInstrValue] = useState("")
+    const [ingredients, setIngredients] = useState(ingrprop);
+    const [nameValue, setNameValue] = useState(nameprop)
+    const [descValue, setDescValue] = useState(descprop)
+    const [instrValue, setInstrValue] = useState(instrprop)
     const [errors,setErrors] = useState({
         name:"",
         ingr:"",
@@ -22,7 +22,7 @@ const AddRecipe = ({user}) => {
     })
     const [image, setImage] = useState({
         file:null,
-        base64URL:""
+        base64URL:imgprop
     })
     const [all,setAll]=useState([])
     useEffect(()=>{
@@ -227,14 +227,25 @@ const AddRecipe = ({user}) => {
             setInstrValue("");
         }
     }
+    const editChosen = (id) =>{
+        firebase.database().ref(`Users/${user.uid}/Recipes`).child(id).update({
+                title: nameValue,
+                details: descValue,
+                requiredIngredients: reqIngredients,
+                additionalIngredients:ingredients,
+                instructions: instrValue,
+                image: image.base64URL,
+        })
+        saveEdited();
+    }
 
     return (
         <Wrapper>
             <Navigation>
-                <Previous  onClick={()=>{
+                {edit ? <Save onClick={()=>{editChosen(id)}}>Zapisz</Save> :<Previous  onClick={()=>{
                     history.push(`/app`);
                     window.location.reload(true);
-                }}/>
+                }}/>}
             </Navigation>
             <MainSection>
                 <MainHeader style={{textAlign: "center",fontSize:"40px"}}>
@@ -291,7 +302,7 @@ const AddRecipe = ({user}) => {
                         <Input type="file" onChange={handleImageUpload}/>
                     </InputContainer>
                 </Form>
-                <Submit type="submit" onClick={createNewRecipe}/>
+                {edit ? null :<Submit type="submit" onClick={createNewRecipe}/> }
             </MainSection>
         </Wrapper>
     )
