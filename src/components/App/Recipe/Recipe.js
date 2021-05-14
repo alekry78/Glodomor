@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Container, Details, Icon, IconDelete, IconFav, Image, RecipeContainer, Title,IconEdit,IconNotFav} from './Recipe.styles';
+import React from 'react';
+import {Container, Details, IconDelete, IconFav, Image, RecipeContainer, Title,IconEdit,IconNotFav} from './Recipe.styles';
 import { faStar } from '@fortawesome/free-solid-svg-icons'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { faStarHalfAlt } from '@fortawesome/free-solid-svg-icons'

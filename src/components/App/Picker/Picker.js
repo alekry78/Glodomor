@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {FoodWrapper} from "../App.styles";
 import FoodMeat from "./FoodComponents/FoodMeat";
 import FoodWheat from "./FoodComponents/FoodWheat";

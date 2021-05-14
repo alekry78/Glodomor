@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import ChosenIngredients from "../App/ChosenIngredients/ChosenIngredients";
 
 export const Form = styled.form`
     width:540px;

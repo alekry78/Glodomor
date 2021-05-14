@@ -5,7 +5,6 @@ import {
     MainSection,
     Navigation,
     PickerContainer,
-    Previous,
     Search,
     Wrapper
 } from "./App.styles";
@@ -52,7 +51,7 @@ const App = ({user,handleLogout}) => {
             }
             setRecipes(recipe)
         })
-    },[])
+    },[user.uid])
     const handleClick = (data) => {
         setIngredients(initialState);
         setIngredients([...data])

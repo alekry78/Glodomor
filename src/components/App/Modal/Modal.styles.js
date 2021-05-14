@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import {Previous} from "../App.styles";
 export const ModalView = styled.div`
     width:100vw;
     height:100vh;

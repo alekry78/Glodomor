@@ -3,7 +3,7 @@ import {
     ModalView,
     Navigation,
     Exit,
-    Image, ImageContainer, RecipeContainer, Title,IngredientsContainer,Ingredient,IngredientSpan, Line,ShortLine, Instructions, InstructionsText,
+    Image, ImageContainer, RecipeContainer, Title,IngredientsContainer,Ingredient,IngredientSpan,ShortLine, Instructions, InstructionsText,
 } from "./Modal.styles";
 const Modal = ({title,requiredIngredients,additionalIngredients,instructions,clearModal,img}) => {
     return(

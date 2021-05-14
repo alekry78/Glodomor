@@ -59,8 +59,8 @@ const AddRecipe = ({user,reqprop,ingrprop,nameprop,descprop,instrprop,imgprop,ed
     const handleAddReqIngredient = (e) => {
         if (e.keyCode === 13) {
             message = "";
-            if (all[0].filter(el => el != reqIngredientsValue).length < all[0].length) {
-                if (reqIngredients.filter(el => el != reqIngredientsValue).length < reqIngredients.length) {
+            if (all[0].filter(el => el !== reqIngredientsValue).length < all[0].length) {
+                if (reqIngredients.filter(el => el !== reqIngredientsValue).length < reqIngredients.length) {
                     message = "Już dodałeś ten składnik!";
                     setReqIngredientsValue("");
                 } else {
@@ -80,8 +80,8 @@ const AddRecipe = ({user,reqprop,ingrprop,nameprop,descprop,instrprop,imgprop,ed
     const handleAddIngredient = (e) => {
         if (e.keyCode === 13) {
             message = "";
-            if (all[0].filter(el => el != ingredientsValue).length < all[0].length) {
-                if (reqIngredients.filter(el => el != ingredientsValue).length < ingredients.length) {
+            if (all[0].filter(el => el !== ingredientsValue).length < all[0].length) {
+                if (ingredients.filter(el => el !== ingredientsValue).length < ingredients.length) {
                     message = "Już dodałeś ten składnik!";
                     setIngredientsValue("");
                 } else {
@@ -100,7 +100,6 @@ const AddRecipe = ({user,reqprop,ingrprop,nameprop,descprop,instrprop,imgprop,ed
     }
     const getBase64 = (file) => {
         return new Promise(resolve => {
-            let fileInfo;
             let baseURL = "";
             // Make new FileReader
             let reader = new FileReader();
