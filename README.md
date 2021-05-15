@@ -1,6 +1,6 @@
-# Glodomor
-#TechUsed:
-## - React
-## - ReactRouter
-## - Styled Components
-## - Firebase
+### Glodomor
+## TechUsed:
+# - React
+# - ReactRouter
+# - Styled Components
+# - Firebase
