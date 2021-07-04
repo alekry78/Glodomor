@@ -1,5 +1,5 @@
 # Glodomor
-## Link : https://inspiring-dijkstra-57d33c.netlify.app/all-recipes;
+## Link : https://inspiring-dijkstra-57d33c.netlify.app/
 ## TechUsed:
 ### - React
 ### - ReactRouter
